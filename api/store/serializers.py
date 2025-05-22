@@ -42,7 +42,7 @@ class CommentCreateSerializer(ModelSerializer):
 class ImageSerializer(ModelSerializer):
     class Meta:
         model = Image
-        fields = ['image','color_picture']
+        fields = ['image']
 
 
 class ProductSerializer(ModelSerializer):

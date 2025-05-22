@@ -147,8 +147,8 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your Project API',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': 'Gercek ayak-gap',
+    'DESCRIPTION': 'online shopping',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 
@@ -157,3 +157,20 @@ SPECTACULAR_SETTINGS = {
     'REDOC_DIST': 'SIDECAR',
     # OTHER SETTINGS
 }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'dayanchkemalovich@gmail.com'
+EMAIL_HOST_PASSWORD = 'yuuy ocgt maoc tkny '
+DEFAULT_FROM_EMAIL = 'dayanchkemalovich@gmail.com'

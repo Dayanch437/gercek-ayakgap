@@ -1,7 +1,8 @@
 from django.db import models
 from apps.cart.models import User
+from apps.utils.models import BaseModel
 
-class Category(models.Model):
+class Category(BaseModel):
     name = models.CharField(max_length=100,unique=True)
     description = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to="product/images",null=True, blank=True)
@@ -15,7 +16,7 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
 
 
-class Product(models.Model):
+class Product(BaseModel):
     name = models.CharField(max_length=25, unique=True)
     image = models.ImageField(upload_to="products/images",blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -23,24 +24,20 @@ class Product(models.Model):
     stock = models.IntegerField()
     is_available = models.BooleanField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now=True)
     stars = models.IntegerField(default=0)
     def __str__(self):
         return self.name
 
-class Comments(models.Model):
+class Comments(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
     product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='comments')
-
-    created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.text},by {self.user}"
 
 
-class Image(models.Model):
+class Image(BaseModel):
     image = models.ImageField(upload_to="products/images", blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='pictures',blank=True, null=True)
     class Meta:
