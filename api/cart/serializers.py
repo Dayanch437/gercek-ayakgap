@@ -6,9 +6,11 @@ from apps.store.models import Product
 from apps.utils.enums import CartStatus
 
 class CartItemSerializer(ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity']
+        fields = ['id', 'product','product_name', 'quantity']
     def  create(self, validated_data):
         user = self.context['request'].user
         cart = Cart.objects.get(user=user,status=CartStatus.PENDING)
@@ -28,14 +30,28 @@ class CartItemSerializer(ModelSerializer):
 
 class CartSerializer(ModelSerializer):
     items = CartItemSerializer(many=True, required=False)
+    total_price = serializers.ReadOnlyField()
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        items = data.get('items', [])
+
+        combined = {}
+        for item in items:
+            product_id = item['product']
+            if product_id in combined:
+                combined[product_id]['quantity'] += item['quantity']
+            else:
+                combined[product_id] = item
+
+        data['items'] = list(combined.values())
+        return data
+
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'status', 'items']
+        fields = ['id', 'user', 'status', 'items','total_price']
         extra_kwargs = {
             'status': {'read_only': True},
-            'user': {'required': False,
-                     'read_only':True}
-
+            'user': {'required': False,'read_only':True}
         }
 
     def create(self, validated_data):
@@ -45,6 +61,7 @@ class CartSerializer(ModelSerializer):
         for item_data in items_data:
             CartItem.objects.create(cart=cart, **item_data)
         return cart
+
 
 
 
