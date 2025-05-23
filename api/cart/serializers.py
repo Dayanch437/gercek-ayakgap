@@ -7,10 +7,12 @@ from apps.utils.enums import CartStatus
 
 class CartItemSerializer(ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
-
+    price = serializers.FloatField(source='product.price', read_only=True)
+    total = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = CartItem
-        fields = ['id', 'product','product_name', 'quantity']
+        fields = ['id', 'product','product_name','price', 'quantity','total']
+
     def  create(self, validated_data):
         user = self.context['request'].user
         cart = Cart.objects.get(user=user,status=CartStatus.PENDING)
@@ -26,6 +28,12 @@ class CartItemSerializer(ModelSerializer):
 
         cart_item = CartItem.objects.create(cart=cart, product=product, quantity=quantity)
         return cart_item
+
+    def get_total(self, obj):
+        price = obj.product.price
+        quantity = obj.quantity
+        total = price * quantity
+        return f"{price} x {quantity} = {total}"
 
 
 class CartSerializer(ModelSerializer):
