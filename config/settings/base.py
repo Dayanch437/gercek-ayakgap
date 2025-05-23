@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # 'channels',
 
     #my
+    'apps.utils',
     'apps.adds',
     'apps.cart',
     'apps.store',
