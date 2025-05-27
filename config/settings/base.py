@@ -26,19 +26,19 @@ SECRET_KEY = 'django-insecure-)a^r*1jzd!ga+53g!!y=z7&t!bjdt4noct&rk(ka8p8@a6jx@9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
 
     #third part
     'rest_framework',
@@ -83,8 +83,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
 
+ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

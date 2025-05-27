@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from apps.cart.models import Cart, CartItem, Order
 from rest_framework.serializers import ModelSerializer
-
 from apps.store.models import Product
 from apps.utils.enums import CartStatus
 
