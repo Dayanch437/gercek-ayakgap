@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-Commerce Management{% endblock %}</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333;
+            --sidebar-bg: #f4f4f4;
+            --link-color: #007bff;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --sidebar-bg: #1e1e1e;
+            --link-color: #4da3ff;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+        }
+        .sidebar h2 {
+            text-align: center;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 15px 0;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: var(--link-color);
+            font-size: 18px;
+        }
+        .main-content {
+             margin-left: 255px; /* Adjust based on sidebar width */
+             padding: 25px;
+             width: calc(100% - 255px); /* Ensure it takes remaining space */
+        }
+        .toggle-dark-mode {
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Management</h2>
+
+        <ul>
+            <li><a href="#" class="toggle-dark-mode" onclick="toggleDarkMode()">Dark Mode 🌙 </a></li>
+            <li><a href="{%  url 'cart:dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'cart:pending_orders' %}">Pending Orders</a></li>
+            <li><a href="{% url 'cart:deliver_order' %}">Delivered Orders</a></li>
+            <li><a href="#">Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script>
+       function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+
+    // Get the icon element
+    const icon = document.querySelector('.toggle-dark-mode');
+
+    // Toggle the icon between moon and sun
+    if (body.classList.contains('dark-mode')) {
+        icon.textContent = '🌞 Light Mode'; // Change to sun (light mode)
+    } else {
+        icon.textContent = 'Dark Mode 🌙 '; // Change to moon (dark mode)
+    }
+
+    // Save the dark mode preference in localStorage
+    localStorage.setItem('dark-mode', body.classList.contains('dark-mode'));
+}
+
+// Load dark mode preference on page load
+if (localStorage.getItem('dark-mode') === 'true') {
+    document.body.classList.add('dark-mode');
+    document.querySelector('.toggle-dark-mode').textContent = 'Light Mode 🌞 '; // Default to sun if dark mode is on
+}
+
+    </script>
+</body>
+</html>

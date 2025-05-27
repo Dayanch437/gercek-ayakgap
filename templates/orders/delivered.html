@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <style>
+      :root {
+    --bg-color: #ffffff;
+    --text-color: #333;
+    --table-header-bg: #f4f4f4;
+    --table-border: #ddd;
+    --link-color: #007bff;
+}
+
+body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --table-header-bg: #1e1e1e;
+    --table-border: #444;
+    --link-color: #4da3ff;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: var(--bg-color);
+}
+
+th, td {
+    border: 1px solid var(--table-border);
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: var(--table-header-bg);
+    color: var(--text-color);
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    margin: 2px;
+    text-decoration: none;
+    background-color: var(--link-color);
+    color: white;
+    border-radius: 5px;
+}
+
+.pagination a:hover {
+    opacity: 0.8;
+}
+
+    </style>
+
+    {% if page_obj.object_list %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                    <th>City</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Cart</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in page_obj.object_list %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.user.username }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.city }}</td>
+                        <td>{{ order.address }}</td>
+                        <td>{{ order.phone }}</td>
+                        <td><a href="/management/{{ order.id }}/details/">Show cart</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% else %}
+        <p>No delivered orders found.</p>
+    {% endif %}
+{% endblock %}

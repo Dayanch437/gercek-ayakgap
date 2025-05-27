@@ -1,0 +1,160 @@
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 style="text-align: center;">Dashboard</h2>
+
+    <div class="dashboard-container">
+        <!-- <div class="card">
+            <h3>Total Earnings</h3>
+            <p><strong>${{ total_earnings }}</strong></p>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="monthlyRevenueChart"></canvas>
+        </div> -->
+
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Orders Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in top_users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.order_count }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No orders found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Top Sold Products</h3>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Total Sold</th>
+                    <th>Total Earned ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in top_products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.total_sold|default:0 }}</td>
+                    <td>${{ product.total_earned|default:0 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No sales data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Monthly Sales Statistics</h3>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Total Sales</th>
+                    <th>Total Revenue ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for month in monthly_sales %}
+                <tr>
+                    <td>{{ month.name }}</td>
+                    <td>{{ month.total_sales }}</td>
+                    <td>${{ month.total_revenue }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No sales data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Top Sold Products</h3>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th> in stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in top_products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.stock}}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No sales data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333;
+            --sidebar-bg: #f4f4f4;
+            --link-color: #007bff;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --sidebar-bg: #1e1e1e;
+            --link-color: #4da3ff;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--sidebar-bg);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .styled-table th, .styled-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .styled-table th {
+            background-color: var(--sidebar-bg);
+        }
+    </style>
+{% endblock %}

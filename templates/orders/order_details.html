@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="order-container">
+    <h1>Order Details</h1>
+
+    <h2>Cart Items</h2>
+    <ul>
+        {% for item in cart_items %}
+            <li>
+                {{ item.product.name }} - Quantity: {{ item.quantity }} - Price: ${{ item.product.price }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Total Amount</h2>
+    <p>Grand Total: ${{ greatTotal }}</p>
+</div>
+
+<style>
+    .order-container {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 40px 20px; /* Move to the top-left */
+        border: 1px solid var(--border-color);
+    }
+
+    .order-container h1,
+    .order-container h2 {
+        color: var(--link-color);
+        text-align: left; /* Align text to the left */
+        margin-bottom: 10px;
+    }
+
+    .order-container ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .order-container li {
+        background: var(--bg-color);
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 5px;
+        border: 1px solid var(--border-color);
+        font-size: 16px;
+    }
+
+    .order-container p {
+        font-size: 18px;
+        font-weight: bold;
+        text-align: left; /* Align text to the left */
+    }
+</style>
+
+{% endblock %}
