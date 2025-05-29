@@ -1,4 +1,8 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from apps import users
 from apps.utils.models import BaseModel
@@ -65,3 +69,20 @@ class Order(BaseModel):
 
     def __str__(self):
         return self.city
+
+@receiver(post_save, sender=Order)
+def send_order_update(sender, instance, **kwargs):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "order_updates",
+        {
+            "type": "order_update",
+            "message": {
+                "id": instance.id,
+                "status": instance.status,
+                "city": instance.city,
+                "address": instance.address,
+                "phone": instance.phone
+            },
+        },
+    )

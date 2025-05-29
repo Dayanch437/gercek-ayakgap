@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import Order
 from django.core.paginator import Paginator
-from apps.user.models import User
+from apps.users.models import User
 from django.db.models import Count, Sum, F
 from apps.store.models import Product
 from apps.cart.models import CartItem

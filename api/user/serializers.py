@@ -10,8 +10,6 @@ class UserSerializer(ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-
-
 class RequestResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
 

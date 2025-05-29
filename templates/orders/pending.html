@@ -1,475 +1,157 @@
 {% extends 'base.html' %}
 
 {% block title %}Pending Orders - E-Commerce Management{% endblock %}
-
 {% block content %}
-<div class="orders-management-container">
-    <div class="orders-header">
-        <h1><i class="fas fa-clock"></i> Pending Orders</h1>
-        <div class="orders-stats">
-            <span class="stat-badge">
-                <i class="fas fa-list-ol"></i> Total: {{ page_obj.paginator.count }}
-            </span>
-            <span class="stat-badge">
-                <i class="fas fa-hourglass-half"></i> Pending: {{ pending_count }}
-            </span>
-        </div>
-    </div>
+<div id="pending-orders-container">
+    <h1>Pending Orders</h1>
 
-    <div class="orders-filter">
-        <div class="filter-group">
-            <label for="status-filter"><i class="fas fa-filter"></i> Filter by:</label>
-            <select id="status-filter" class="filter-select">
-                <option value="all">All Orders</option>
-                <option value="Pending" selected>Pending</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Delivered">Delivered</option>
-            </select>
-        </div>
-        <div class="search-group">
-            <input type="text" id="order-search" placeholder="Search order ID..." class="search-input">
-            <button class="search-btn"><i class="fas fa-search"></i></button>
-        </div>
-    </div>
-
-    <div class="orders-list">
+    <div id="pending-orders">
         {% if page_obj.object_list %}
             {% for order in page_obj.object_list %}
-                <div class="order-card card-{{ order.status|lower }}" id="order-{{ order.id }}" data-status="{{ order.status }}">
-                    <div class="order-header">
-                        <div class="order-id">
-                            <span class="order-badge">#{{ order.id }}</span>
-                            <span class="order-date"><i class="far fa-calendar-alt"></i> {{ order.created_at|date:"M d, Y H:i" }}</span>
-                        </div>
-                        <div class="order-status">
-                            <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
-                        </div>
-                    </div>
-
-                    <div class="order-details">
-                        <div class="customer-info">
-                            <div class="info-item">
-                                <i class="fas fa-user"></i>
-                                <span>{{ order.customer_name|default:"Guest" }}</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-phone"></i>
-                                <span>{{ order.phone }}</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>{{ order.city }}, {{ order.address }}</span>
-                            </div>
-                        </div>
-
-                        <div class="order-actions">
-                            <a href="/dashboard/{{ order.id }}/details/" class="action-btn view-btn">
-                                <i class="fas fa-shopping-cart"></i> View Cart
-                            </a>
-                            {% if order.status != "Delivered" %}
-                                <button onclick="changeStatus({{ order.id }})" class="action-btn deliver-btn" data-order-id="{{ order.id }}">
-                                    <i class="fas fa-truck"></i> Mark as Delivered
-                                </button>
-                            {% endif %}
-                        </div>
-                    </div>
+                <div class="order-card" id="order-{{ order.id }}" data-status="{{ order.status }}">
+                    <p><strong>Order ID:</strong> {{ order.id }}</p>
+                    <p><strong>Status:</strong> <span class="status-text">{{ order.status }}</span></p>
+                    <p><strong>City:</strong> {{ order.city }}</p>
+                    <p><strong>Address:</strong> {{ order.address }}</p>
+                    <p><strong>Phone:</strong> {{ order.phone }}</p>
+                    <a href="/management/{{ order.id }}/details/" class="cart-link">Show cart</a>
+                    {% if order.status != "Delivered" %}
+                        <button onclick="changeStatus({{ order.id }})" class="status-btn" data-order-id="{{ order.id }}">Mark as Delivered</button>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}
-            <div class="no-orders">
-                <i class="far fa-check-circle"></i>
-                <h3>No pending orders found</h3>
-                <p>All orders are processed and delivered</p>
-            </div>
+            <p class="no-orders">No pending orders found.</p>
         {% endif %}
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination Controls -->
     {% if page_obj.paginator.num_pages > 1 %}
-    <div class="pagination-container">
-        <div class="pagination">
-            {% if page_obj.has_previous %}
-                <a href="?page=1" class="page-link first" title="First Page">
-                    <i class="fas fa-angle-double-left"></i>
-                </a>
-                <a href="?page={{ page_obj.previous_page_number }}" class="page-link prev" title="Previous">
-                    <i class="fas fa-angle-left"></i>
-                </a>
-            {% endif %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" aria-label="First page">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}" aria-label="Previous page">previous</a>
+        {% endif %}
 
-            {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                    <span class="page-link current">{{ num }}</span>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <a href="?page={{ num }}" class="page-link">{{ num }}</a>
-                {% endif %}
-            {% endfor %}
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
 
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}" class="page-link next" title="Next">
-                    <i class="fas fa-angle-right"></i>
-                </a>
-                <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link last" title="Last Page">
-                    <i class="fas fa-angle-double-right"></i>
-                </a>
-            {% endif %}
-        </div>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" aria-label="Next page">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last page">last &raquo;</a>
+        {% endif %}
     </div>
     {% endif %}
 </div>
 
 <style>
-    :root {
-        --primary-color: #4361ee;
-        --secondary-color: #3f37c9;
-        --success-color: #4cc9f0;
-        --warning-color: #f8961e;
-        --danger-color: #f94144;
-        --light-color: #f8f9fa;
-        --dark-color: #212529;
-        --border-radius: 8px;
-        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        --transition: all 0.3s ease;
+    /* Container */
+    #pending-orders-container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
     }
 
-    body.dark-mode {
-        --light-color: #1e1e1e;
-        --dark-color: #f8f9fa;
-        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    #pending-orders-container h1 {
+        color: var(--link-color);
+        margin-bottom: 15px;
     }
 
-    .orders-management-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 0 1rem;
+    /* No orders message */
+    .no-orders {
+        color: var(--text-color);
+        font-style: italic;
+        text-align: center;
+        padding: 20px;
     }
 
-    .orders-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .orders-header h1 {
-        color: var(--primary-color);
-        margin: 0;
-        font-size: 1.8rem;
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-    }
-
-    .orders-stats {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .stat-badge {
-        background: var(--light-color);
-        padding: 0.5rem 1rem;
-        border-radius: var(--border-radius);
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        box-shadow: var(--box-shadow);
-    }
-
-    .stat-badge i {
-        color: var(--primary-color);
-    }
-
-    .orders-filter {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-    }
-
-    .filter-group label {
-        font-weight: 500;
-        color: var(--dark-color);
-    }
-
-    .filter-select, .search-input {
-        padding: 0.6rem 1rem;
-        border-radius: var(--border-radius);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        background: var(--light-color);
-        color: var(--dark-color);
-    }
-
-    .search-group {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .search-input {
-        min-width: 250px;
-    }
-
-    .search-btn {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 0 1.2rem;
-        border-radius: var(--border-radius);
-        cursor: pointer;
-        transition: var(--transition);
-    }
-
-    .search-btn:hover {
-        background: var(--secondary-color);
-    }
-
-    .orders-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1.2rem;
-    }
 
     .order-card {
-        background: var(--light-color);
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
-        overflow: hidden;
-        transition: var(--transition);
+        background: var(--card-bg);
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+        border-left: 4px solid var(--link-color);
+        transition: all 0.3s ease;
     }
 
-    .order-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    }
-
-    .card-pending {
-        border-left: 4px solid var(--warning-color);
-    }
-
-    .card-processing {
-        border-left: 4px solid var(--primary-color);
-    }
-
-    .card-shipped {
-        border-left: 4px solid var(--success-color);
-    }
-
-    .card-delivered {
-        border-left: 4px solid #28a745;
-        opacity: 0.8;
-    }
-
-    .order-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .order-id {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .order-badge {
-        background: var(--primary-color);
-        color: white;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-
-    .order-date {
-        font-size: 0.9rem;
-        color: var(--dark-color);
+    .order-card[data-status="Delivered"] {
         opacity: 0.7;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        border-left-color: #28a745;
     }
 
-    .status-badge {
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
+    .order-card p {
+        margin: 5px 0;
+        font-size: 15px;
+        color: var(--text-color);
     }
 
-    .status-pending {
-        background: #fff3cd;
-        color: #856404;
-    }
-
-    .status-processing {
-        background: #cce5ff;
-        color: #004085;
-    }
-
-    .status-shipped {
-        background: #d4edda;
-        color: #155724;
-    }
-
-    .status-delivered {
-        background: #d1ecf1;
-        color: #0c5460;
-    }
-
-    .order-details {
-        padding: 1rem;
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .customer-info {
-        display: flex;
-        flex-direction: column;
-        gap: 0.8rem;
-        flex: 1;
-        min-width: 250px;
-    }
-
-    .info-item {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        color: var(--dark-color);
-    }
-
-    .info-item i {
-        width: 20px;
-        color: var(--primary-color);
-    }
-
-    .order-actions {
-        display: flex;
-        gap: 0.8rem;
-        align-self: flex-end;
-    }
-
-    .action-btn {
-        padding: 0.6rem 1rem;
-        border-radius: var(--border-radius);
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: none;
-    }
-
-    .view-btn {
-        background: var(--light-color);
-        color: var(--primary-color);
-        border: 1px solid var(--primary-color);
-    }
-
-    .view-btn:hover {
-        background: rgba(67, 97, 238, 0.1);
-    }
-
-    .deliver-btn {
-        background: var(--primary-color);
-        color: white;
-    }
-
-    .deliver-btn:hover {
-        background: var(--secondary-color);
-    }
-
-    .no-orders {
-        text-align: center;
-        padding: 3rem;
-        color: var(--dark-color);
-    }
-
-    .no-orders i {
-        font-size: 3rem;
-        color: var(--success-color);
-        margin-bottom: 1rem;
-    }
-
-    .no-orders h3 {
-        margin: 0.5rem 0;
-        font-size: 1.5rem;
-    }
-
-    .no-orders p {
-        opacity: 0.7;
-        margin: 0;
-    }
-
-    .pagination-container {
-        margin-top: 2rem;
-        display: flex;
-        justify-content: center;
-    }
-
-    .pagination {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .page-link {
-        padding: 0.6rem 0.9rem;
-        border-radius: var(--border-radius);
+    /* Show Cart Link */
+    .cart-link {
+        display: inline-block;
+        margin: 10px 10px 0 0;
         text-decoration: none;
-        color: var(--dark-color);
-        background: var(--light-color);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 40px;
-    }
-
-    .page-link:hover {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-    }
-
-    .page-link.current {
-        background: var(--primary-color);
-        color: white;
         font-weight: bold;
-        border-color: var(--primary-color);
+        color: var(--link-color);
+        transition: color 0.2s ease;
     }
 
-    @media (max-width: 768px) {
-        .order-details {
-            flex-direction: column;
-        }
+    .cart-link:hover {
+        text-decoration: underline;
+    }
 
-        .order-actions {
-            align-self: stretch;
-            flex-direction: column;
-        }
+    /* Status Button */
+    .status-btn {
+        background-color: var(--link-color);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        font-size: 14px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        margin-top: 10px;
+    }
 
-        .action-btn {
-            justify-content: center;
-        }
+    .status-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .status-btn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
+    /* Pagination */
+    .pagination {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .pagination a {
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 3px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        transition: all 0.2s ease;
+    }
+
+    .pagination a:hover {
+        background: var(--link-color);
+        color: white;
+        border-color: var(--link-color);
+    }
+
+    .pagination .current {
+        font-weight: bold;
+        padding: 8px 12px;
     }
 </style>
 
@@ -487,8 +169,7 @@
 
         socket.onopen = function(event) {
             console.log('WebSocket connection established.');
-            reconnectAttempts = 0;
-            showToast('Connected to real-time updates', 'success');
+            reconnectAttempts = 0; // Reset reconnect attempts on successful connection
         };
 
         socket.onmessage = function(event) {
@@ -498,7 +179,6 @@
                 console.log('Received order update:', order);
 
                 updateOrderDisplay(order);
-                showToast(`Order #${order.id} updated to ${order.status}`, 'info');
             } catch (error) {
                 console.error('Error processing WebSocket message:', error);
             }
@@ -509,48 +189,13 @@
             if (reconnectAttempts < maxReconnectAttempts) {
                 setTimeout(connectWebSocket, reconnectDelay);
                 reconnectAttempts++;
-                showToast(`Connection lost. Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`, 'warning');
-            } else {
-                showToast('Disconnected from real-time updates', 'error');
+                console.log(`Attempting to reconnect (${reconnectAttempts}/${maxReconnectAttempts})...`);
             }
         };
 
         socket.onerror = function(error) {
             console.error('WebSocket error:', error);
-            showToast('WebSocket connection error', 'error');
         };
-    }
-
-    // Function to show toast notifications
-    function showToast(message, type) {
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <div class="toast-message">${message}</div>
-            <button class="toast-close">&times;</button>
-        `;
-
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 10);
-
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => {
-                toast.remove();
-            }, 300);
-        }, 5000);
-
-        // Close button
-        toast.querySelector('.toast-close').addEventListener('click', () => {
-            toast.classList.remove('show');
-            setTimeout(() => {
-                toast.remove();
-            }, 300);
-        });
     }
 
     // Function to update order display
@@ -560,28 +205,22 @@
 
         if (!orderElement && order.status === 'PENDING') {
             // Add new order to the list
-            pendingOrders.prepend(createOrderElement(order));
+            pendingOrders.appendChild(createOrderElement(order));
         } else if (orderElement) {
             if (order.status === 'Delivered') {
-                // Update status and styling
+                // Mark as delivered and fade out
                 orderElement.dataset.status = 'Delivered';
-                orderElement.className = 'order-card card-delivered';
-                orderElement.querySelector('.status-badge').className = 'status-badge status-delivered';
-                orderElement.querySelector('.status-badge').textContent = 'Delivered';
-
-                // Remove deliver button if exists
-                const button = orderElement.querySelector('.deliver-btn');
+                orderElement.querySelector('.status-text').textContent = 'Delivered';
+                const button = orderElement.querySelector('.status-btn');
                 if (button) button.remove();
 
-                // Optional: remove after delay
+                // Optional: remove after animation
                 setTimeout(() => {
                     orderElement.remove();
-                }, 3000);
+                }, 1000);
             } else {
                 // Update existing order
-                orderElement.querySelector('.status-badge').className = `status-badge status-${order.status.toLowerCase()}`;
-                orderElement.querySelector('.status-badge').textContent = order.status;
-                orderElement.className = `order-card card-${order.status.toLowerCase()}`;
+                orderElement.querySelector('.status-text').textContent = order.status;
             }
         }
     }
@@ -589,47 +228,19 @@
     // Function to create a new order element
     function createOrderElement(order) {
         const orderElement = document.createElement('div');
-        orderElement.className = `order-card card-${order.status.toLowerCase()}`;
+        orderElement.className = 'order-card';
         orderElement.id = `order-${order.id}`;
         orderElement.dataset.status = order.status;
 
         orderElement.innerHTML = `
-            <div class="order-header">
-                <div class="order-id">
-                    <span class="order-badge">#${order.id}</span>
-                    <span class="order-date"><i class="far fa-calendar-alt"></i> ${new Date().toLocaleString()}</span>
-                </div>
-                <div class="order-status">
-                    <span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span>
-                </div>
-            </div>
-
-            <div class="order-details">
-                <div class="customer-info">
-                    <div class="info-item">
-                        <i class="fas fa-user"></i>
-                        <span>${order.customer_name || 'Guest'}</span>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-phone"></i>
-                        <span>${order.phone}</span>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>${order.city}, ${order.address}</span>
-                    </div>
-                </div>
-
-                <div class="order-actions">
-                    <a href="/management/${order.id}/details/" class="action-btn view-btn">
-                        <i class="fas fa-shopping-cart"></i> View Cart
-                    </a>
-                    ${order.status === 'Delivered' ? '' :
-                      `<button onclick="changeStatus(${order.id})" class="action-btn deliver-btn" data-order-id="${order.id}">
-                        <i class="fas fa-truck"></i> Mark as Delivered
-                      </button>`}
-                </div>
-            </div>
+            <p><strong>Order ID:</strong> ${order.id}</p>
+            <p><strong>Status:</strong> <span class="status-text">${order.status}</span></p>
+            <p><strong>City:</strong> ${order.city}</p>
+            <p><strong>Address:</strong> ${order.address}</p>
+            <p><strong>Phone:</strong> ${order.phone}</p>
+            <a href="/management/${order.id}/details/" class="cart-link">Show cart</a>
+            ${order.status === 'Delivered' ? '' :
+              `<button onclick="changeStatus(${order.id})" class="status-btn" data-order-id="${order.id}">Mark as Delivered</button>`}
         `;
 
         return orderElement;
@@ -637,11 +248,8 @@
 
     // Function to change order status
     function changeStatus(orderId) {
-        const button = document.querySelector(`.deliver-btn[data-order-id="${orderId}"]`);
-        if (button) {
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            button.disabled = true;
-        }
+        const button = document.querySelector(`.status-btn[data-order-id="${orderId}"]`);
+        if (button) button.disabled = true;
 
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({
@@ -651,6 +259,7 @@
             }));
         } else {
             console.error('WebSocket is not connected');
+            if (button) button.disabled = false;
             // Fallback to AJAX if WebSocket fails
             fetch(`/management/${orderId}/update-status/`, {
                 method: 'POST',
@@ -663,21 +272,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    updateOrderDisplay({...data.order, status: 'Delivered'});
+                    updateOrderDisplay({id: orderId, status: 'Delivered'});
                 } else {
-                    if (button) {
-                        button.innerHTML = '<i class="fas fa-truck"></i> Mark as Delivered';
-                        button.disabled = false;
-                    }
-                    showToast(`Failed to update order: ${data.error}`, 'error');
+                    if (button) button.disabled = false;
+                    console.error('Failed to update status:', data.error);
                 }
             })
             .catch(error => {
-                if (button) {
-                    button.innerHTML = '<i class="fas fa-truck"></i> Mark as Delivered';
-                    button.disabled = false;
-                }
-                showToast('Network error while updating order', 'error');
+                if (button) button.disabled = false;
+                console.error('Error:', error);
             });
         }
     }
@@ -698,102 +301,9 @@
         return cookieValue;
     }
 
-    // Filter orders by status
-    document.getElementById('status-filter').addEventListener('change', function() {
-        const status = this.value;
-        window.location.href = `?status=${status.toLowerCase()}`;
-    });
-
-    // Search functionality
-    document.getElementById('order-search').addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const orders = document.querySelectorAll('.order-card');
-
-        orders.forEach(order => {
-            const orderId = order.id.replace('order-', '');
-            if (orderId.includes(searchTerm)) {
-                order.style.display = '';
-            } else {
-                order.style.display = 'none';
-            }
-        });
-    });
-
     document.addEventListener('DOMContentLoaded', function() {
         connectWebSocket();
-
-        // Set initial filter value from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const statusFilter = urlParams.get('status');
-        if (statusFilter) {
-            document.getElementById('status-filter').value = statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1);
-        }
     });
+
 </script>
-
-<!-- Toast notification styles -->
-<style>
-    .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        z-index: 1000;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-        max-width: 350px;
-    }
-
-    .toast.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .toast-success {
-        background: #d4edda;
-        color: #155724;
-        border-left: 4px solid #28a745;
-    }
-
-    .toast-info {
-        background: #d1ecf1;
-        color: #0c5460;
-        border-left: 4px solid #17a2b8;
-    }
-
-    .toast-warning {
-        background: #fff3cd;
-        color: #856404;
-        border-left: 4px solid #ffc107;
-    }
-
-    .toast-error {
-        background: #f8d7da;
-        color: #721c24;
-        border-left: 4px solid #dc3545;
-    }
-
-    .toast-close {
-        background: transparent;
-        border: none;
-        color: inherit;
-        font-size: 1.2rem;
-        margin-left: 1rem;
-        cursor: pointer;
-        padding: 0 0 0 1rem;
-    }
-
-    .toast-message {
-        flex: 1;
-    }
-</style>
-
-<!-- Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}

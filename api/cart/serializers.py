@@ -74,36 +74,28 @@ class CartSerializer(ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    cart = serializers.SerializerMethodField()  # Get user's pending cart ID
-    user = serializers.SerializerMethodField()  # Get user's username
-
     class Meta:
         model = Order
         fields = ['id', 'user', 'cart', 'city', 'address', 'phone','status']
-
-    def get_user(self, obj):
-        """Returns the username of the order owner."""
-        return obj.user.username if obj.user else None
-
-    def get_cart(self, obj):
-        """Returns the cart ID if available."""
-        return obj.cart.id if obj.cart else None
+        extra_kwargs = {
+            "user":{
+            "read_only":True
+            },
+            "cart":{
+                "read_only":True
+            }
+        }
 
     def create(self, validated_data):
-        """Assigns user and pending cart to the order automatically."""
+
         request = self.context.get('request')
+
         user = request.user if request and request.user.is_authenticated else None
         cart = Cart.objects.filter(user=user, status=CartStatus.PENDING).first()
-
         if not cart:
             raise serializers.ValidationError("No pending cart found for this user.")
-
-        # Create an order and link it to the user's pending cart
         order = Order.objects.create(user=user, cart=cart, **validated_data)
-
         # Mark the cart as completed
         cart.status = CartStatus.COMPLETED
         cart.save()
-
         return order
-
