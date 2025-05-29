@@ -48,6 +48,8 @@ class OrderConsumer(AsyncWebsocketConsumer):
         order.save()
         # print(f'Updated status of order {order_id} to: {order.status}')  # Log the updated status
         user = order.user.username
+        print(order.created_date),
+
         return {
             "id": order.id,
             "status": order.status,

@@ -14,7 +14,9 @@
                     <p><strong>City:</strong> {{ order.city }}</p>
                     <p><strong>Address:</strong> {{ order.address }}</p>
                     <p><strong>Phone:</strong> {{ order.phone }}</p>
-                    <a href="/management/{{ order.id }}/details/" class="cart-link">Show cart</a>
+                    <p><strong>date:</strong> {{ order.created_date }}</p>
+
+                    <a href="/dashboard/{{ order.id }}/details/" class="cart-link">Show cart</a>
                     {% if order.status != "Delivered" %}
                         <button onclick="changeStatus({{ order.id }})" class="status-btn" data-order-id="{{ order.id }}">Mark as Delivered</button>
                     {% endif %}
@@ -238,7 +240,9 @@
             <p><strong>City:</strong> ${order.city}</p>
             <p><strong>Address:</strong> ${order.address}</p>
             <p><strong>Phone:</strong> ${order.phone}</p>
-            <a href="/management/${order.id}/details/" class="cart-link">Show cart</a>
+            <p><strong>Date :</strong> ${order.created_date}</p>
+
+            <a href="/dashboard/${order.id}/details/" class="cart-link">Show cart</a>
             ${order.status === 'Delivered' ? '' :
               `<button onclick="changeStatus(${order.id})" class="status-btn" data-order-id="${order.id}">Mark as Delivered</button>`}
         `;
