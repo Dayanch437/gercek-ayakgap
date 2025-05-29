@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 
 User = get_user_model()
-from api.user.serializers import UserSerializer, ProfileSerializer
+from api.user.serializers import UserSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 @extend_schema(
@@ -278,11 +278,11 @@ def reset_password_with_otp(request):
         status=status.HTTP_200_OK
     )
 
-class ProfileView(ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = ProfileSerializer
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.filter(email=self.request.user.email)
-        return qs
+# class ProfileView(ModelViewSet):
+#     queryset = User.objects.all()
+#     serializer_class = ProfileSerializer
+#
+#     def get_queryset(self):
+#         qs = super().get_queryset()
+#         qs = qs.filter(email=self.request.user.email)
+#         return qs

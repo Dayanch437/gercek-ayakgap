@@ -63,5 +63,4 @@ class ProductSerializer(ModelSerializer):
             'created_date',
             'modified_date',
             'comments',
-
         ]

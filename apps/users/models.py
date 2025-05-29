@@ -3,6 +3,7 @@ from datetime import timedelta
 import random
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,PermissionsMixin
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class UserManager(BaseUserManager):
@@ -54,7 +55,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(max_length=50, unique=True, blank=True, null=True)
     avatar = models.ImageField(upload_to="avatar", null=True, blank=True)
     email = models.EmailField(max_length=254, unique=True)
-    phone_number = models.CharField(max_length=15,null=True, blank=True)
+    phone_number = PhoneNumberField(unique=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)

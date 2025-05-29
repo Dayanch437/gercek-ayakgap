@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path
-from api.user.viewsets import UserViewSet,ProfileView
+from api.user.viewsets import UserViewSet
 from .viewsets import (
 request_password_reset,
     verify_otp,
@@ -10,7 +10,7 @@ request_password_reset,
 
 router = DefaultRouter()
 router.register('user', UserViewSet)
-router.register('profile', ProfileView,basename='profile')
+# router.register('profile', ProfileView,basename='profile')
 
 urlpatterns = [
     path('request-reset/', request_password_reset, name='request-password-reset'),

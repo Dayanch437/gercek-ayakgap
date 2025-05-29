@@ -30,14 +30,14 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 
 
-class ProfileSerializer(ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ['id','username','first_name','last_name','phone_number', 'email', 'avatar']
-        extra_kwargs = {
-            "email": {"required": False},
-            "first_name": {"required": False},
-            "last_name": {"required": False},
-            "phone_number": {"required": False}
-        }
+# class ProfileSerializer(ModelSerializer):
+#
+#     class Meta:
+#         model = User
+#         fields = ['id','username','first_name','last_name','phone', 'email', 'avatar']
+#         extra_kwargs = {
+#             "email": {"required": False},
+#             "first_name": {"required": False},
+#             "last_name": {"required": False},
+#             "phone_number": {"required": False}
+#         }
