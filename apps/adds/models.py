@@ -4,7 +4,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 from apps.utils.validators import validate_email
 
 
-
 class Banner(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()

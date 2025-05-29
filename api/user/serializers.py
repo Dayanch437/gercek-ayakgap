@@ -1,6 +1,7 @@
-from rest_framework.serializers import ModelSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
+
 User = get_user_model()  # Always use this for custom user models
 
 class UserSerializer(ModelSerializer):

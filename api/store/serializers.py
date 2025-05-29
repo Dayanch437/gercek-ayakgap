@@ -1,8 +1,8 @@
-from rest_framework.serializers import ModelSerializer
-from apps.store.models import Product,Comments,Image
 from rest_framework import serializers
-from apps.store.models import Category
+from rest_framework.serializers import ModelSerializer
+
 from apps.adds.models import Banner
+from apps.store.models import Category, Comments, Image, Product
 
 
 class CategorySerializer(ModelSerializer):

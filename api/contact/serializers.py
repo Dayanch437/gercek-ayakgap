@@ -1,10 +1,11 @@
+from datetime import datetime
 from random import randint
+
 from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from rest_framework import serializers
-from datetime import datetime
 
 
 class ContactSerializer(serializers.Serializer):

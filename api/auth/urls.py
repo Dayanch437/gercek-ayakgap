@@ -1,7 +1,8 @@
-from django.urls import path, include
-from api.auth.veiwsets import UserCreateView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.urls import include, path
+from rest_framework_simplejwt.views import (TokenObtainPairView,
+                                            TokenRefreshView)
 
+from api.auth.veiwsets import UserCreateView
 
 urlpatterns = [
     path("sign-up/", UserCreateView.as_view()),

@@ -1,7 +1,9 @@
 # admin.py
 
 from django.contrib import admin
-from .models import User, PasswordResetOTP
+
+from .models import PasswordResetOTP, User
+
 
 class PasswordResetOTPInline(admin.TabularInline):
     model = PasswordResetOTP
@@ -9,6 +11,7 @@ class PasswordResetOTPInline(admin.TabularInline):
     readonly_fields = ('otp', 'created_at', 'is_used')
     can_delete = False
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+
 
 class CustomUserAdmin(BaseUserAdmin):
     model = User

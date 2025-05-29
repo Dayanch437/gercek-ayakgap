@@ -1,13 +1,14 @@
-from apps.store.models import Category
-from apps.adds.models import Banner
-from apps.store.models import Product, Comments
-from .serializers import CategorySerializer, CommentCreateSerializer, BannerSerializer
-from .serializers import ProductSerializer
-from rest_framework.permissions import AllowAny
 from drf_spectacular.utils import extend_schema
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
-from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+
+from apps.adds.models import Banner
+from apps.store.models import Category, Comments, Product
+
+from .serializers import (BannerSerializer, CategorySerializer,
+                          CommentCreateSerializer, ProductSerializer)
 
 
 @extend_schema(

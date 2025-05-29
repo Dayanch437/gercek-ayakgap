@@ -1,8 +1,11 @@
 
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async as sync_to_async
 import json
+
+from channels.db import database_sync_to_async as sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
+
 from .models import Order
+
 
 class OrderConsumer(AsyncWebsocketConsumer):
     async def connect(self):

@@ -1,6 +1,6 @@
-from .models import Comments, Product,Image,Category
-
 from django.contrib import admin
+
+from .models import Category, Comments, Image, Product
 
 # Register your models here.
 admin.site.register(Category)

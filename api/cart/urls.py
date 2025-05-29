@@ -1,5 +1,6 @@
-from .viewsets import CartViewSet, OrderViewSet
 from rest_framework.routers import DefaultRouter
+
+from .viewsets import CartViewSet, OrderViewSet
 
 router = DefaultRouter()
 

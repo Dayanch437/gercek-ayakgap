@@ -1,4 +1,5 @@
 from django.db import models
+
 from apps.utils.models import BaseModel
 
 
@@ -24,7 +25,7 @@ class Product(BaseModel):
     is_available = models.BooleanField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     stars = models.IntegerField(default=0)
-
+    
     def __str__(self):
         return self.name
 

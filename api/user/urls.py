@@ -1,12 +1,10 @@
-from rest_framework.routers import DefaultRouter
 from django.urls import path
-from api.user.viewsets import UserViewSet
-from .viewsets import (
-request_password_reset,
-    verify_otp,
-    reset_password_with_otp
-)
+from rest_framework.routers import DefaultRouter
 
+from api.user.viewsets import UserViewSet
+
+from .viewsets import (request_password_reset, reset_password_with_otp,
+                       verify_otp)
 
 router = DefaultRouter()
 router.register('user', UserViewSet)

@@ -1,17 +1,16 @@
 
-from rest_framework import viewsets, permissions
 from django.contrib.auth import get_user_model
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_spectacular.utils import extend_schema
+from rest_framework import permissions, viewsets
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import AllowAny
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
-from rest_framework.decorators import api_view, permission_classes
 
 User = get_user_model()
-from api.user.serializers import UserSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from api.user.serializers import UserSerializer
+
 
 @extend_schema(
     tags=['user'],
@@ -24,18 +23,17 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
-from django.core.mail import send_mail
-from django.conf import settings
+
 from apps.users.models import PasswordResetOTP
-from .serializers import (
-    RequestResetSerializer,
-    VerifyOTPSerializer,
-    ResetPasswordSerializer
-)
-from django.contrib.auth import get_user_model
+
+from .serializers import (RequestResetSerializer, ResetPasswordSerializer,
+                          VerifyOTPSerializer)
 
 User = get_user_model()
 

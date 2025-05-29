@@ -1,7 +1,7 @@
 from rest_framework import routers
-from api.store.viewsets import ProductViewSet, CategoryViewSet, CommentViewSet, BannerViewSet, LastestProductsViewSet
 
-
+from api.store.viewsets import (BannerViewSet, CategoryViewSet, CommentViewSet,
+                                LastestProductsViewSet, ProductViewSet)
 
 router = routers.DefaultRouter()
 router.register(r'products', ProductViewSet)

@@ -1,17 +1,14 @@
-from rest_framework import generics
-from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
+from rest_framework import generics, status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from yaml import serialize
 
 User = get_user_model()  # Always use this for custom user model
 from drf_spectacular.utils import extend_schema
+
 from api.auth.serializers import RegisterSerializer
-
-
-
 
 
 class UserCreateView(generics.CreateAPIView):

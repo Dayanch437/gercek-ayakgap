@@ -1,10 +1,12 @@
-from django.shortcuts import render
-from .models import Order
 from django.core.paginator import Paginator
-from apps.users.models import User
-from django.db.models import Count, Sum, F
-from apps.store.models import Product
+from django.db.models import Count, F, Sum
+from django.shortcuts import render
+
 from apps.cart.models import CartItem
+from apps.store.models import Product
+from apps.users.models import User
+
+from .models import Order
 
 
 def get_pending_orders(request):

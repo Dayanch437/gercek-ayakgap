@@ -1,8 +1,11 @@
-from apps.cart.models import Cart, Order
-from .serializers import CartSerializer, OrderSerializer
-from rest_framework import viewsets
 from drf_spectacular.utils import extend_schema
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+
+from apps.cart.models import Cart, Order
+
+from .serializers import CartSerializer, OrderSerializer
+
 
 @extend_schema(
     tags=['cart'],
