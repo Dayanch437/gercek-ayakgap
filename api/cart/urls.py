@@ -7,8 +7,6 @@ router = DefaultRouter()
 router.register('cart', CartViewSet)
 router.register('order', OrderViewSet,basename='order')
 
-
-
 urlpatterns = [
 
 ] + router.urls

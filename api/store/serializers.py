@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from apps.adds.models import Banner
-from apps.store.models import Category, Comments, Image, Product
+from apps.store.models import Category, Comment, Image, Product, Rating
 
 
 class CategorySerializer(ModelSerializer):
@@ -20,7 +20,7 @@ class CommentsSerializer(ModelSerializer):
     user = serializers.CharField(source='user.username', read_only=True)
     user_image = serializers.ImageField(source='user.avatar', read_only=True)
     class Meta:
-        model = Comments
+        model = Comment
         fields = ['id','user','text','user_image']
         extra_kwargs = {
             'id':{
@@ -31,7 +31,7 @@ class CommentsSerializer(ModelSerializer):
 
 class CommentCreateSerializer(ModelSerializer):
     class Meta:
-        model = Comments
+        model = Comment
         fields = ['product','text']
     def create(self, validated_data):
         user = self.context['request'].user
@@ -45,9 +45,19 @@ class ImageSerializer(ModelSerializer):
         fields = ['image']
 
 
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ['id', 'user', 'product', 'stars', 'comment', 'created_date']
+        read_only_fields = ['user']
+
 class ProductSerializer(ModelSerializer):
     comments = CommentsSerializer(many=True,read_only=True)
     pictures = ImageSerializer(read_only=True,many=True)
+    rating_count = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField()
+
+
     class Meta:
         model = Product
         fields = [
@@ -62,5 +72,15 @@ class ProductSerializer(ModelSerializer):
             'category',
             'created_date',
             'modified_date',
+
+            'rating_count',
+            'average_rating',
             'comments',
         ]
+
+        def get_average_rating(self, obj):
+            return obj.average_rating['average']
+
+        def get_rating_count(self, obj):
+            return obj.average_rating['count']
+

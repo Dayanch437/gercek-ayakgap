@@ -52,20 +52,20 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser,PermissionsMixin):
-    first_name = models.CharField(max_length=50, blank=True, null=True)
-    last_name = models.CharField(max_length=50, blank=True, null=True)
-    username = models.CharField(max_length=50, unique=True, blank=True, null=True)
-    avatar = models.ImageField(upload_to="avatar", null=True, blank=True)
-    email = models.EmailField(max_length=254, unique=True)
-    phone_number = PhoneNumberField(unique=True)
-    date_joined = models.DateTimeField(auto_now_add=True)
-    last_login = models.DateTimeField(auto_now_add=True)
-    is_admin = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    first_name    = models.CharField(max_length=50, blank=True, null=True)
+    last_name     = models.CharField(max_length=50, blank=True, null=True)
+    username      = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    avatar        = models.ImageField(upload_to="avatar", null=True, blank=True)
+    email         = models.EmailField(max_length=254, unique=True)
+    phone_number  = PhoneNumberField(unique=True)
+    date_joined   = models.DateTimeField(auto_now_add=True)
+    last_login    = models.DateTimeField(auto_now_add=True)
+    is_admin      = models.BooleanField(default=False)
+    is_staff      = models.BooleanField(default=False)
+    is_active     = models.BooleanField(default=True)
     is_superadmin = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "username"
+    USERNAME_FIELD  = "username"
     REQUIRED_FIELDS = ["email"]
 
     objects = UserManager()
@@ -91,10 +91,8 @@ class PasswordResetOTP(models.Model):
     def generate_otp(cls, user):
         # Delete any existing OTPs for this user
         cls.objects.filter(user=user).delete()
-
         # Generate 6-digit OTP
         otp = str(random.randint(100000, 999999))
         return cls.objects.create(user=user, otp=otp)
-
     def is_valid(self):
         return not self.is_used and (timezone.now() - self.created_at) < timedelta(minutes=15)

@@ -5,10 +5,14 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from apps.adds.models import Banner
-from apps.store.models import Category, Comments, Product
+from apps.store.models import Category, Comment, Product,Rating
 
-from .serializers import (BannerSerializer, CategorySerializer,
-                          CommentCreateSerializer, ProductSerializer)
+from .serializers import (
+    BannerSerializer,
+    CategorySerializer,
+    CommentCreateSerializer,
+    ProductSerializer, RatingSerializer
+)
 
 
 @extend_schema(
@@ -53,7 +57,11 @@ class LastestProductsViewSet(ModelViewSet):
 
 
 class CommentViewSet(ModelViewSet):
-    queryset = Comments.objects.all().order_by("-created_date")
+    queryset = Comment.objects.all().order_by("-created_date")
     serializer_class = CommentCreateSerializer
     http_method_names = ['post']
+
+class RatingViewSet(ModelViewSet):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
 

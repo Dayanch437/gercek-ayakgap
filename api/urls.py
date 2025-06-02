@@ -7,4 +7,3 @@ urlpatterns = [
     path('cart/', include("api.cart.urls")),
     path('contact/', include("api.contact.urls")),
 ]
-
