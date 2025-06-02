@@ -39,10 +39,10 @@ class Comments(BaseModel):
         return f"{self.text}, by {self.user}"
 
 
+
 class Image(BaseModel):
     image = models.ImageField(upload_to="products/images", blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='pictures', blank=True, null=True)
-
     class Meta:
         verbose_name_plural = 'images'
         db_table = 'products_images'
