@@ -14,12 +14,18 @@ from .serializers import CartSerializer, OrderSerializer
 class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
-    def get_queryset(self):
-        return Cart.objects.filter(user=self.request.user)
 
+    def get_queryset(self):
+        return (
+            Cart.objects.filter(user=self.request.user)
+            .prefetch_related(
+                'items__product'
+            )
+            .select_related('user')
+        )
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
+    queryset = Order.objects.all().prefetch_related('user')
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]  # Only logged-in users can access
     http_method_names = ['get', 'post']

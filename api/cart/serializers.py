@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-
 from apps.cart.models import Cart, CartItem, Order
 from apps.store.models import Product
 from apps.utils.enums import CartStatus
@@ -39,7 +38,8 @@ class CartItemSerializer(ModelSerializer):
 
 class CartSerializer(ModelSerializer):
     items = CartItemSerializer(many=True, required=False)
-    total_price = serializers.ReadOnlyField()
+    total_price = serializers.SerializerMethodField()
+    user = serializers.CharField(source='user.username', read_only=True)
     def to_representation(self, instance):
         data = super().to_representation(instance)
         items = data.get('items', [])
@@ -55,6 +55,11 @@ class CartSerializer(ModelSerializer):
         data['items'] = list(combined.values())
         return data
 
+    def get_total_price(self, obj):
+        return sum(
+            (item.product.price if item.product else 0) * item.quantity
+            for item in obj.items.all()
+        )
     class Meta:
         model = Cart
         fields = ['id', 'user', 'status', 'items','total_price']

@@ -21,13 +21,6 @@ class Cart(BaseModel):
     def __str__(self):
         return f"Cart of {self.user.username}"
 
-    @property
-    def total_price(self):
-        return sum(
-            (item.product.price if item.product else 0) * item.quantity
-            for item in self.items.all()
-        )
-
 
 class CartItem(BaseModel):
     cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
