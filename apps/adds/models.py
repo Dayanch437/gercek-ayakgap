@@ -2,6 +2,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 from apps.utils.validators import validate_email
+from config import settings
 
 
 class Banner(models.Model):
@@ -28,12 +29,10 @@ class About(models.Model):
 
 
 class Contact(models.Model):
-    username = models.CharField(max_length=255)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
     gmail = models.EmailField(max_length=200, validators=[validate_email])
     phone = PhoneNumberField()
     comment = models.TextField()
-    is_verified = models.BooleanField(default=False)
-    verification_code = models.CharField(max_length=6, blank=True, null=True)
 
     def __str__(self):
         return f"{self.username}: {self.comment}"

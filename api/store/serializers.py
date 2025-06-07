@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-
 from apps.adds.models import Banner
 from apps.store.models import Category, Comment, Image, Product, Rating
 
@@ -8,7 +7,7 @@ from apps.store.models import Category, Comment, Image, Product, Rating
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
-        fields = "__all__"
+        fields = ['id','name','description','image']
 
 
 class BannerSerializer(ModelSerializer):
