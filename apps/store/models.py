@@ -25,9 +25,6 @@ class Product(BaseModel):
     is_available = models.BooleanField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
-    # Remove the stars field - we'll calculate it dynamically
-    # stars = models.IntegerField(default=0)  # REMOVE THIS LINE
-
     @property
     def average_rating(self):
         """Calculate average rating from related ratings"""
@@ -59,7 +56,9 @@ class Rating(BaseModel):
     user = models.ForeignKey(
         'users.User',
         on_delete=models.CASCADE,
-        related_name='product_ratings'
+        related_name='product_ratings',
+        blank=True,
+        null=True
     )
     stars = models.PositiveSmallIntegerField(
         choices=[(1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5')]
