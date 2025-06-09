@@ -1,0 +1,486 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="orders-management-container">
+    <div class="orders-header">
+        <h1><i class="fas fa-clipboard-list"></i> Orders Management</h1>
+        <div class="orders-filters">
+            <div class="filter-group">
+                <label for="status-filter"><i class="fas fa-filter"></i> Filter:</label>
+                <select id="status-filter" class="filter-select">
+                    <option value="all">All Orders</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered" selected>Delivered</option>
+                </select>
+            </div>
+            <div class="search-group">
+                <input type="text" id="order-search" placeholder="Search orders..." class="search-input">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="orders-table-container">
+        {% if page_obj.object_list %}
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in page_obj.object_list %}
+                    <tr class="order-row" data-status="{{ order.status|lower }}">
+                        <td class="order-id">#{{ order.id }}</td>
+                        <td class="customer">
+                            <div class="customer-avatar">{{ order.user.username|first|upper }}</div>
+                            {{ order.user.username }}
+                        </td>
+                        <td class="status">
+                            <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+                        </td>
+                        <td class="location">
+                            <div><i class="fas fa-city"></i> {{ order.city }}</div>
+                            <div class="address-truncate"><i class="fas fa-map-marker-alt"></i> {{ order.address }}</div>
+                        </td>
+                        <td class="contact">
+                            <div><i class="fas fa-phone"></i> {{ order.phone }}</div>
+                            {% if order.user.email %}
+                            <div><i class="fas fa-envelope"></i> {{ order.user.email }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="actions">
+                            <a href="/management/{{ order.id }}/details/" class="action-btn view-btn" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="action-btn print-btn" title="Print Invoice" onclick="printOrder({{ order.id }})">
+                                <i class="fas fa-print"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-orders">
+                <i class="far fa-check-circle"></i>
+                <h3>No delivered orders found</h3>
+                <p>All orders are in process or pending</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination-container">
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="page-link first" title="First Page">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="page-link prev" title="Previous">
+                    <i class="fas fa-angle-left"></i>
+                </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="page-link current">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="page-link next" title="Next">
+                    <i class="fas fa-angle-right"></i>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link last" title="Last Page">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --success-color: #4cc9f0;
+        --warning-color: #f8961e;
+        --danger-color: #f94144;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+    }
+
+    body.dark-mode {
+        --light-color: #1e1e1e;
+        --dark-color: #f8f9fa;
+        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .orders-management-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .orders-header {
+        margin-bottom: 2rem;
+    }
+
+    .orders-header h1 {
+        color: var(--primary-color);
+        margin: 0 0 1rem 0;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .orders-filters {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .filter-group label {
+        font-weight: 500;
+        color: var(--dark-color);
+    }
+
+    .filter-select, .search-input {
+        padding: 0.6rem 1rem;
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: var(--light-color);
+        color: var(--dark-color);
+    }
+
+    .search-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .search-input {
+        min-width: 250px;
+    }
+
+    .search-btn {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0 1.2rem;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .search-btn:hover {
+        background: var(--secondary-color);
+    }
+
+    .orders-table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+    }
+
+    .orders-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: var(--light-color);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+    }
+
+    .orders-table th {
+        background: var(--primary-color);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 500;
+    }
+
+    .orders-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+    }
+
+    .orders-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .orders-table tr:hover td {
+        background-color: rgba(67, 97, 238, 0.03);
+    }
+
+    .order-id {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .customer {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .customer-avatar {
+        width: 36px;
+        height: 36px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-processing {
+        background: #cce5ff;
+        color: #004085;
+    }
+
+    .status-shipped {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-delivered {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .location, .contact {
+        font-size: 0.9rem;
+    }
+
+    .location div, .contact div {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .address-truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+    }
+
+    .view-btn {
+        background: rgba(67, 97, 238, 0.1);
+        color: var(--primary-color);
+    }
+
+    .view-btn:hover {
+        background: rgba(67, 97, 238, 0.2);
+    }
+
+    .print-btn {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+    }
+
+    .print-btn:hover {
+        background: rgba(40, 167, 69, 0.2);
+    }
+
+    .no-orders {
+        text-align: center;
+        padding: 3rem;
+        background: var(--light-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+
+    .no-orders i {
+        font-size: 3rem;
+        color: var(--success-color);
+        margin-bottom: 1rem;
+    }
+
+    .no-orders h3 {
+        margin: 0.5rem 0;
+        font-size: 1.5rem;
+    }
+
+    .no-orders p {
+        opacity: 0.7;
+        margin: 0;
+    }
+
+    .pagination-container {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .page-link {
+        padding: 0.6rem 0.9rem;
+        border-radius: var(--border-radius);
+        text-decoration: none;
+        color: var(--dark-color);
+        background: var(--light-color);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+    }
+
+    .page-link:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .page-link.current {
+        background: var(--primary-color);
+        color: white;
+        font-weight: bold;
+        border-color: var(--primary-color);
+    }
+
+    @media (max-width: 768px) {
+        .orders-filters {
+            flex-direction: column;
+        }
+
+        .filter-group, .search-group {
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+        }
+
+        .orders-table {
+            display: block;
+        }
+
+        .orders-table th, .orders-table td {
+            padding: 0.8rem;
+        }
+
+        .address-truncate {
+            max-width: 150px;
+        }
+    }
+</style>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<script>
+    function printOrder(orderId) {
+        window.open(`/management/${orderId}/print/`, '_blank');
+    }
+
+    // Filter table rows based on search input
+    document.getElementById('order-search').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll('.order-row');
+
+        rows.forEach(row => {
+            const rowText = row.textContent.toLowerCase();
+            if (rowText.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Filter by status
+    document.getElementById('status-filter').addEventListener('change', function() {
+        const status = this.value.toLowerCase();
+        const rows = document.querySelectorAll('.order-row');
+
+        if (status === 'all') {
+            rows.forEach(row => row.style.display = '');
+            return;
+        }
+
+        rows.forEach(row => {
+            if (row.dataset.status === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Set initial filter from URL
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const statusFilter = urlParams.get('status');
+        if (statusFilter) {
+            document.getElementById('status-filter').value =
+                statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1);
+        }
+    });
+</script>
+{% endblock %}

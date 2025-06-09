@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Orders - E-Commerce Management{% endblock %}
+{% block content %}
+<div id="pending-orders-container">
+    <h1>Pending Orders</h1>
+
+    <div id="pending-orders">
+        {% if page_obj.object_list %}
+            {% for order in page_obj.object_list %}
+                <div class="order-card" id="order-{{ order.id }}" data-status="{{ order.status }}">
+                    <p><strong>Order ID:</strong> {{ order.id }}</p>
+                    <p><strong>Status:</strong> <span class="status-text">{{ order.status }}</span></p>
+                    <p><strong>City:</strong> {{ order.city }}</p>
+                    <p><strong>Address:</strong> {{ order.address }}</p>
+                    <p><strong>Phone:</strong> {{ order.phone }}</p>
+                    <p><strong>date:</strong> {{ order.created_date }}</p>
+
+                    <a href="/dashboard/{{ order.id }}/details/" class="cart-link">Show cart</a>
+                    {% if order.status != "Delivered" %}
+                        <button onclick="changeStatus({{ order.id }})" class="status-btn" data-order-id="{{ order.id }}">Mark as Delivered</button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-orders">No pending orders found.</p>
+        {% endif %}
+    </div>
+
+    <!-- Pagination Controls -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" aria-label="First page">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}" aria-label="Previous page">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" aria-label="Next page">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last page">last &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    /* Container */
+    #pending-orders-container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    #pending-orders-container h1 {
+        color: var(--link-color);
+        margin-bottom: 15px;
+    }
+
+    /* No orders message */
+    .no-orders {
+        color: var(--text-color);
+        font-style: italic;
+        text-align: center;
+        padding: 20px;
+    }
+
+
+    .order-card {
+        background: var(--card-bg);
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+        border-left: 4px solid var(--link-color);
+        transition: all 0.3s ease;
+    }
+
+    .order-card[data-status="Delivered"] {
+        opacity: 0.7;
+        border-left-color: #28a745;
+    }
+
+    .order-card p {
+        margin: 5px 0;
+        font-size: 15px;
+        color: var(--text-color);
+    }
+
+    /* Show Cart Link */
+    .cart-link {
+        display: inline-block;
+        margin: 10px 10px 0 0;
+        text-decoration: none;
+        font-weight: bold;
+        color: var(--link-color);
+        transition: color 0.2s ease;
+    }
+
+    .cart-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Status Button */
+    .status-btn {
+        background-color: var(--link-color);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        font-size: 14px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        margin-top: 10px;
+    }
+
+    .status-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .status-btn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
+    /* Pagination */
+    .pagination {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .pagination a {
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 3px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        transition: all 0.2s ease;
+    }
+
+    .pagination a:hover {
+        background: var(--link-color);
+        color: white;
+        border-color: var(--link-color);
+    }
+
+    .pagination .current {
+        font-weight: bold;
+        padding: 8px 12px;
+    }
+</style>
+
+<script>
+    // WebSocket connection management
+    let socket;
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 5;
+    const reconnectDelay = 3000; // 3 seconds
+
+    function connectWebSocket() {
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const wsHost = window.location.host;
+        socket = new WebSocket(`${wsProtocol}${wsHost}/ws/orders/`);
+
+        socket.onopen = function(event) {
+            console.log('WebSocket connection established.');
+            reconnectAttempts = 0; // Reset reconnect attempts on successful connection
+        };
+
+        socket.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                const order = data.message;
+                console.log('Received order update:', order);
+
+                updateOrderDisplay(order);
+            } catch (error) {
+                console.error('Error processing WebSocket message:', error);
+            }
+        };
+
+        socket.onclose = function(event) {
+            console.log('WebSocket connection closed.');
+            if (reconnectAttempts < maxReconnectAttempts) {
+                setTimeout(connectWebSocket, reconnectDelay);
+                reconnectAttempts++;
+                console.log(`Attempting to reconnect (${reconnectAttempts}/${maxReconnectAttempts})...`);
+            }
+        };
+
+        socket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+        };
+    }
+
+    // Function to update order display
+    function updateOrderDisplay(order) {
+        const orderElement = document.getElementById(`order-${order.id}`);
+        const pendingOrders = document.getElementById('pending-orders');
+
+        if (!orderElement && order.status === 'PENDING') {
+            // Add new order to the list
+            pendingOrders.appendChild(createOrderElement(order));
+        } else if (orderElement) {
+            if (order.status === 'Delivered') {
+                // Mark as delivered and fade out
+                orderElement.dataset.status = 'Delivered';
+                orderElement.querySelector('.status-text').textContent = 'Delivered';
+                const button = orderElement.querySelector('.status-btn');
+                if (button) button.remove();
+
+                // Optional: remove after animation
+                setTimeout(() => {
+                    orderElement.remove();
+                }, 1000);
+            } else {
+                // Update existing order
+                orderElement.querySelector('.status-text').textContent = order.status;
+            }
+        }
+    }
+
+    // Function to create a new order element
+    function createOrderElement(order) {
+        const orderElement = document.createElement('div');
+        orderElement.className = 'order-card';
+        orderElement.id = `order-${order.id}`;
+        orderElement.dataset.status = order.status;
+
+        orderElement.innerHTML = `
+            <p><strong>Order ID:</strong> ${order.id}</p>
+            <p><strong>Status:</strong> <span class="status-text">${order.status}</span></p>
+            <p><strong>City:</strong> ${order.city}</p>
+            <p><strong>Address:</strong> ${order.address}</p>
+            <p><strong>Phone:</strong> ${order.phone}</p>
+            <p><strong>Date :</strong> ${order.created_date}</p>
+
+            <a href="/dashboard/${order.id}/details/" class="cart-link">Show cart</a>
+            ${order.status === 'Delivered' ? '' :
+              `<button onclick="changeStatus(${order.id})" class="status-btn" data-order-id="${order.id}">Mark as Delivered</button>`}
+        `;
+
+        return orderElement;
+    }
+
+    // Function to change order status
+    function changeStatus(orderId) {
+        const button = document.querySelector(`.status-btn[data-order-id="${orderId}"]`);
+        if (button) button.disabled = true;
+
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({
+                'type': 'change_status',
+                'order_id': orderId,
+                'new_status': 'Delivered'
+            }));
+        } else {
+            console.error('WebSocket is not connected');
+            if (button) button.disabled = false;
+            // Fallback to AJAX if WebSocket fails
+            fetch(`/management/${orderId}/update-status/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({status: 'Delivered'})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateOrderDisplay({id: orderId, status: 'Delivered'});
+                } else {
+                    if (button) button.disabled = false;
+                    console.error('Failed to update status:', data.error);
+                }
+            })
+            .catch(error => {
+                if (button) button.disabled = false;
+                console.error('Error:', error);
+            });
+        }
+    }
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        connectWebSocket();
+    });
+
+</script>
+{% endblock %}

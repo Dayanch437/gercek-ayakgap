@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-Commerce Management{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-light: #eef2ff;
+            --bg-color: #f9fafb;
+            --text-color: #111827;
+            --sidebar-bg: #ffffff;
+            --sidebar-text: #374151;
+            --sidebar-active: #4361ee;
+            --sidebar-hover: #f3f4f6;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.2s ease-in-out;
+        }
+
+        body.dark-mode {
+            --primary-color: #6366f1;
+            --primary-light: #312e81;
+            --bg-color: #111827;
+            --text-color: #f9fafb;
+            --sidebar-bg: #1f2937;
+            --sidebar-text: #d1d5db;
+            --sidebar-active: #818cf8;
+            --sidebar-hover: #374151;
+            --card-bg: #1f2937;
+            --border-color: #374151;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            line-height: 1.5;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-left: 0.75rem;
+        }
+
+        .sidebar-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--sidebar-text);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            background-color: var(--sidebar-hover);
+            color: var(--text-color);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .nav-link i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            background-color: var(--sidebar-hover);
+            margin-top: 2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--sidebar-hover);
+        }
+
+        .theme-toggle-text {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-toggle i {
+            margin-right: 0.75rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            transition: var(--transition);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+
+            .app-container {
+                flex-direction: column;
+            }
+        }
+
+        {#/* Icons (using Unicode for simplicity - in production use icon library) */#}
+        {#.icon-dashboard::before { content: "📊"; }#}
+        {#.icon-orders::before { content: "📦"; }#}
+        {#.icon-delivered::before { content: "🚚"; }#}
+        {#.icon-logout::before { content: "🚪"; }#}
+        {#.icon-moon::before { content: "🌙"; }#}
+        {#.icon-sun::before { content: "☀️"; }#}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">E</div>
+                <h2>E-Commerce Admin</h2>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="{% url 'cart:dashboard' %}" class="nav-link active">
+                        <i class="icon-dashboard"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'cart:pending_orders' %}" class="nav-link">
+                        <i class="icon-orders"></i>
+                        Pending Orders
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'cart:deliver_order' %}" class="nav-link">
+                        <i class="icon-delivered"></i>
+                        Delivered Orders
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="icon-logout"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+
+            <div class="theme-toggle" onclick="toggleDarkMode()">
+                <div class="theme-toggle-text">
+                    <i class="icon-moon"></i>
+                    <span>Dark Mode</span>
+                </div>
+                <div class="toggle-switch">
+                    <div class="switch"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                <div class="user-profile">
+                    <span>Admin User</span>
+                    <div class="user-avatar">A</div>
+                </div>
+            </div>
+
+            {% block content %}
+            <!-- Content will be injected here -->
+            {% endblock %}
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            
+            // Update the theme toggle UI
+            const themeToggle = document.querySelector('.theme-toggle');
+            const icon = themeToggle.querySelector('i');
+            const text = themeToggle.querySelector('span');
+            
+            if (body.classList.contains('dark-mode')) {
+                icon.className = 'icon-sun';
+                text.textContent = 'Light Mode';
+            } else {
+                icon.className = 'icon-moon';
+                text.textContent = 'Dark Mode';
+            }
+            
+            // Save preference to localStorage
+            localStorage.setItem('dark-mode', body.classList.contains('dark-mode'));
+        }
+        
+        // Check for saved theme preference
+        if (localStorage.getItem('dark-mode') === 'true') {
+            document.body.classList.add('dark-mode');
+            const themeToggle = document.querySelector('.theme-toggle');
+            themeToggle.querySelector('i').className = 'icon-sun';
+            themeToggle.querySelector('span').textContent = 'Light Mode';
+        }
+    </script>
+</body>
+</html>
