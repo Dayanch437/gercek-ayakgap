@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 
 
 def validate_email(value):
@@ -14,10 +15,12 @@ def validate_email(value):
         "@online.tm",  # Türkmenistanda Türkmen Telekom tarapyndan hödürlenýär
         "@sanly.tm",  # Döwlet ýa-da IT taslamalary bilen bagly domen
         "@tmcell.tm",  # TMCell, ýerli aragatnaşyk operatory bilen bagly
-        "@turkmentelecom.tm",  # Türkmenistanyň döwlet eýeçiligindäki aragatnaşyk kompaniýasy bilen bagly
+        "@turkmentelecom.tm",
         "@agt.tm",  # Ahal welaýaty ýa-da Aşgabat bilen bagly sebitleýin domen
-        "@pochta.tm"  # Ýerli poçta ýa-da e-poçta hyzmatlaryna degişli bolup biler
+        "@pochta.tm",  # Ýerli poçta ýa-da e-poçta hyzmatlaryna degişli bolup biler
     )
 
     if not value.endswith(allowed_domains):
-        raise ValidationError(f"Email must end with one of the following: {', '.join(allowed_domains)}")
+        raise ValidationError(
+            f"Email must end with one of the following: {', '.join(allowed_domains)}"
+        )

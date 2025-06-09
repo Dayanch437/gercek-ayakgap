@@ -5,13 +5,14 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from apps.adds.models import Banner
-from apps.store.models import Category, Comment, Product,Rating
+from apps.store.models import Category, Comment, Product, Rating
 
 from .serializers import (
     BannerSerializer,
     CategorySerializer,
     CommentCreateSerializer,
-    ProductSerializer, RatingSerializer
+    ProductSerializer,
+    RatingSerializer,
 )
 
 
@@ -25,24 +26,20 @@ class BannerViewSet(ReadOnlyModelViewSet):
     serializer_class = BannerSerializer
 
 
-
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (AllowAny,)
-    http_method_names = ['get']
-
+    http_method_names = ["get"]
 
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = (AllowAny,)
-    http_method_names = ['get']
+    http_method_names = ["get"]
 
-
-
-    @action(detail=False, methods=['get'], url_path=r'category/(?P<category_id>\d+)')
+    @action(detail=False, methods=["get"], url_path=r"category/(?P<category_id>\d+)")
     def products_by_category(self, request, category_id=None):
         products = Product.objects.filter(category_id=category_id)
         serializer = self.get_serializer(products, many=True)
@@ -50,18 +47,18 @@ class ProductViewSet(ModelViewSet):
 
 
 class LastestProductsViewSet(ModelViewSet):
-    queryset = Product.objects.all().order_by('-created_date')[:6]
+    queryset = Product.objects.all().order_by("-created_date")[:6]
     serializer_class = ProductSerializer
     permission_classes = (AllowAny,)
-    http_method_names = ['get']
+    http_method_names = ["get"]
 
 
 class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all().order_by("-created_date")
     serializer_class = CommentCreateSerializer
-    http_method_names = ['post']
+    http_method_names = ["post"]
+
 
 class RatingViewSet(ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
-

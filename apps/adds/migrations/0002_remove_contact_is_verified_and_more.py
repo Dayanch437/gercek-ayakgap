@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('adds', '0001_initial'),
+        ("adds", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='contact',
-            name='is_verified',
+            model_name="contact",
+            name="is_verified",
         ),
         migrations.RemoveField(
-            model_name='contact',
-            name='verification_code',
+            model_name="contact",
+            name="verification_code",
         ),
     ]

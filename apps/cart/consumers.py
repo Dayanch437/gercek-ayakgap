@@ -1,4 +1,3 @@
-
 import json
 
 from channels.db import database_sync_to_async as sync_to_async
@@ -18,13 +17,11 @@ class OrderConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         # print('Received WebSocket message:', text_data)
         text_data_json = json.loads(text_data)
-        message_type = text_data_json.get('type')
+        message_type = text_data_json.get("type")
 
-        if message_type == 'change_status':
-            order_id = text_data_json['order_id']
-            new_status = text_data_json['new_status']
-            # print(f'Updating order {order_id} to status: {new_status}')  # Log the update
-
+        if message_type == "change_status":
+            order_id = text_data_json["order_id"]
+            new_status = text_data_json["new_status"]
             # Update the order status in the database
             order_data = await self.update_order_status(order_id, new_status)
 
@@ -37,8 +34,6 @@ class OrderConsumer(AsyncWebsocketConsumer):
                 },
             )
 
-
-
     async def order_update(self, event):
         # print('Broadcasting order update:', event)  # Log the broadcast
         await self.send(text_data=json.dumps(event))
@@ -46,10 +41,8 @@ class OrderConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def update_order_status(self, order_id, new_status):
         order = Order.objects.get(id=order_id)
-        # print(f'Current status of order {order_id}: {order.status}')  # Log the current status
         order.status = new_status
         order.save()
-        # print(f'Updated status of order {order_id} to: {order.status}')  # Log the updated status
         user = order.user.username
         print(order.created_date),
 

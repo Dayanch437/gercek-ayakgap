@@ -7,49 +7,96 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Cart',
+            name="Cart",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('status', models.CharField(choices=[('PENDING', 'Pending'), ('CANCELLED', 'Cancelled'), ('COMPLETED', 'Completed'), ('DELIVERED', 'Delivered')], default='PENDING', max_length=20)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_date", models.DateTimeField(auto_now_add=True)),
+                ("modified_date", models.DateTimeField(auto_now=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("PENDING", "Pending"),
+                            ("CANCELLED", "Cancelled"),
+                            ("COMPLETED", "Completed"),
+                            ("DELIVERED", "Delivered"),
+                        ],
+                        default="PENDING",
+                        max_length=20,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='CartItem',
+            name="CartItem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('quantity', models.PositiveIntegerField(default=1)),
-                ('added_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_date", models.DateTimeField(auto_now_add=True)),
+                ("modified_date", models.DateTimeField(auto_now=True)),
+                ("quantity", models.PositiveIntegerField(default=1)),
+                ("added_at", models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='Order',
+            name="Order",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_date', models.DateTimeField(auto_now_add=True)),
-                ('modified_date', models.DateTimeField(auto_now=True)),
-                ('status', models.CharField(choices=[('PENDING', 'Pending'), ('DELIVERED', 'Delivered')], default='PENDING', max_length=20)),
-                ('city', models.CharField(max_length=100)),
-                ('address', models.CharField(max_length=120)),
-                ('phone', models.CharField(max_length=120)),
-                ('total_price', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_date", models.DateTimeField(auto_now_add=True)),
+                ("modified_date", models.DateTimeField(auto_now=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("PENDING", "Pending"), ("DELIVERED", "Delivered")],
+                        default="PENDING",
+                        max_length=20,
+                    ),
+                ),
+                ("city", models.CharField(max_length=100)),
+                ("address", models.CharField(max_length=120)),
+                ("phone", models.CharField(max_length=120)),
+                (
+                    "total_price",
+                    models.DecimalField(
+                        blank=True, decimal_places=2, max_digits=10, null=True
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-id',),
+                "ordering": ("-id",),
             },
         ),
     ]

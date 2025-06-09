@@ -10,54 +10,102 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='About',
+            name="About",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.TextField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("text", models.TextField()),
             ],
         ),
         migrations.CreateModel(
-            name='Banner',
+            name="Banner",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100)),
-                ('description', models.TextField()),
-                ('image', models.ImageField(blank=True, null=True, upload_to='banner')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=100)),
+                ("description", models.TextField()),
+                ("image", models.ImageField(blank=True, null=True, upload_to="banner")),
             ],
             options={
-                'verbose_name': 'banner',
-                'verbose_name_plural': 'banners',
+                "verbose_name": "banner",
+                "verbose_name_plural": "banners",
             },
         ),
         migrations.CreateModel(
-            name='Contact',
+            name="Contact",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('username', models.CharField(max_length=255)),
-                ('gmail', models.EmailField(max_length=200, validators=[apps.utils.validators.validate_email])),
-                ('phone', phonenumber_field.modelfields.PhoneNumberField(max_length=128, region=None)),
-                ('comment', models.TextField()),
-                ('is_verified', models.BooleanField(default=False)),
-                ('verification_code', models.CharField(blank=True, max_length=6, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("username", models.CharField(max_length=255)),
+                (
+                    "gmail",
+                    models.EmailField(
+                        max_length=200,
+                        validators=[apps.utils.validators.validate_email],
+                    ),
+                ),
+                (
+                    "phone",
+                    phonenumber_field.modelfields.PhoneNumberField(
+                        max_length=128, region=None
+                    ),
+                ),
+                ("comment", models.TextField()),
+                ("is_verified", models.BooleanField(default=False)),
+                (
+                    "verification_code",
+                    models.CharField(blank=True, max_length=6, null=True),
+                ),
             ],
             options={
-                'verbose_name': 'contact',
-                'verbose_name_plural': 'contacts',
-                'db_table': 'contact',
+                "verbose_name": "contact",
+                "verbose_name_plural": "contacts",
+                "db_table": "contact",
             },
         ),
         migrations.CreateModel(
-            name='Notification',
+            name="Notification",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(blank=True, null=True, upload_to='Bildirisler')),
-                ('title', models.CharField(max_length=100)),
-                ('description', models.TextField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(blank=True, null=True, upload_to="Bildirisler"),
+                ),
+                ("title", models.CharField(max_length=100)),
+                ("description", models.TextField()),
             ],
         ),
     ]

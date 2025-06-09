@@ -7,6 +7,7 @@ class CartStatus(models.TextChoices):
     COMPLETED = "COMPLETED", "Completed"
     DELIVERED = "DELIVERED", "Delivered"
 
+
 class OrderStatus(models.TextChoices):
     PENDING = "PENDING", "Pending"
     DELIVERED = "DELIVERED", "Delivered"

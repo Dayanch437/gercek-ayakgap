@@ -1,11 +1,12 @@
+import os
+import uuid
+
 from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import TemporaryUploadedFile
 from django.db import models
 from django.db.models.fields.files import FieldFile
 from imagekit import ImageSpec
 from PIL import Image, UnidentifiedImageError
-import os
-import uuid
-from django.core.files.uploadedfile import TemporaryUploadedFile
 
 
 def upload_file(instance: TemporaryUploadedFile, filename: str) -> str:
@@ -25,30 +26,28 @@ class CompressedImageSpec(ImageSpec):
 class CompressedImageFile(FieldFile):
     def save(self, name, content, save=True):
         try:
-
-            path = (
-                content.temporary_file_path()
-                if hasattr(content, "temporary_file_path")
-                else content.name
-            )
-
-            if not path:
+            # Use the temporary file path if available
+            if hasattr(content, "temporary_file_path"):
+                path = content.temporary_file_path()
+                file = open(path, "rb")
+            else:
+                # Otherwise read directly from the content
                 content.seek(0)
-                source_file = CompressedImageSpec(source=content)
-                return super().save(name, source_file.generate(), save)
+                file = content
 
-            with open(path, "rb") as file:
-                if not (file.name.endswith(".gif") or file.name.endswith(".svg")):
-                    image = Image.open(file)
-                    image_format = CompressedImageSpec.format
+            # Skip GIF and SVG formats
+            if not (name.lower().endswith(".gif") or name.lower().endswith(".svg")):
+                image = Image.open(file)
+                image_format = CompressedImageSpec.format
 
-                    compressed_image = ContentFile(b"")
-                    image.save(compressed_image, format=image_format, quality=75)
+                compressed_image = ContentFile(b"")
+                image.save(compressed_image, format=image_format, quality=75)
 
-                    base_name, _ = os.path.splitext(name)
-                    name = f"{base_name}.{image_format.lower()}"
+                base_name, _ = os.path.splitext(name)
+                name = f"{base_name}.{image_format.lower()}"
 
-                    return super().save(name, compressed_image, save)
+                return super().save(name, compressed_image, save)
+
         except UnidentifiedImageError:
             pass
 

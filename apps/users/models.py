@@ -1,18 +1,28 @@
 import random
 from datetime import timedelta
-from apps.utils.fields import CompressedImageField
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
-    PermissionsMixin
+    PermissionsMixin,
 )
 from django.db import models
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+from apps.utils.fields import CompressedImageField
+
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, email, password=None, first_name="", last_name="", phone_number=None):
+    def create_user(
+        self,
+        username,
+        email,
+        password=None,
+        first_name="",
+        last_name="",
+        phone_number=None,
+    ):
         if not email:
             raise ValueError("Email is required")
         if not username:
@@ -53,8 +63,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-
-class User(AbstractBaseUser,PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50, blank=True, null=True)
     username = models.CharField(max_length=50, unique=True, blank=True, null=True)
@@ -89,7 +98,6 @@ class PasswordResetOTP(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
 
-
     @classmethod
     def generate_otp(cls, user):
         # Delete any existing OTPs for this user
@@ -97,5 +105,8 @@ class PasswordResetOTP(models.Model):
         # Generate 6-digit OTP
         otp = str(random.randint(100000, 999999))
         return cls.objects.create(user=user, otp=otp)
+
     def is_valid(self):
-        return not self.is_used and (timezone.now() - self.created_at) < timedelta(minutes=15)
+        return not self.is_used and (timezone.now() - self.created_at) < timedelta(
+            minutes=15
+        )

@@ -1,7 +1,9 @@
 from django.db import models
 from django.db.models import Avg, Count
-from apps.utils.models import BaseModel
+
 from apps.utils.fields import CompressedImageField
+from apps.utils.models import BaseModel
+
 
 class Category(BaseModel):
     name = models.CharField(max_length=100, unique=True)
@@ -23,24 +25,20 @@ class Product(BaseModel):
     description = models.TextField(blank=True)
     stock = models.IntegerField()
     is_available = models.BooleanField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name="products"
+    )
 
     @property
     def average_rating(self):
         """Calculate average rating from related ratings"""
-        result = self.ratings.aggregate(
-            average=Avg('stars'),
-            count=Count('id')
-        )
-        return {
-            'average': result['average'] or 0,
-            'count': result['count']
-        }
+        result = self.ratings.aggregate(average=Avg("stars"), count=Count("id"))
+        return {"average": result["average"] or 0, "count": result["count"]}
 
     @property
     def stars(self):
         """Backward compatibility - returns just the average"""
-        return int(round(self.average_rating['average'] or 0))
+        return int(round(self.average_rating["average"] or 0))
 
     def __str__(self):
         return self.name
@@ -48,37 +46,34 @@ class Product(BaseModel):
 
 class Rating(BaseModel):
     """New model to store individual ratings"""
+
     product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name='ratings'
+        Product, on_delete=models.CASCADE, related_name="ratings"
     )
     user = models.ForeignKey(
-        'users.User',
+        "users.User",
         on_delete=models.CASCADE,
-        related_name='product_ratings',
+        related_name="product_ratings",
         blank=True,
-        null=True
+        null=True,
     )
     stars = models.PositiveSmallIntegerField(
-        choices=[(1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5')]
+        choices=[(1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")]
     )
     comment = models.TextField(blank=True, null=True)
 
     class Meta:
-        unique_together = ('product', 'user')  # Prevent multiple ratings
+        unique_together = ("product", "user")  # Prevent multiple ratings
 
     def __str__(self):
         return f"{self.stars} stars by {self.user} for {self.product}"
 
 
 class Comment(BaseModel):  # Changed from Comments to Comment (Django convention)
-    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
     product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name='comments'
+        Product, on_delete=models.CASCADE, related_name="comments"
     )
 
     def __str__(self):
@@ -90,14 +85,14 @@ class Image(BaseModel):
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        related_name='pictures',
+        related_name="pictures",
         blank=True,
-        null=True
+        null=True,
     )
 
     class Meta:
-        verbose_name_plural = 'images'
-        db_table = 'products_images'
+        verbose_name_plural = "images"
+        db_table = "products_images"
 
     def __str__(self):
         return self.image.name
