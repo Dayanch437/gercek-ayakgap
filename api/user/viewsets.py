@@ -4,12 +4,11 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.viewsets import ModelViewSet
+from api.user.serializers import UserSerializer
 
 User = get_user_model()
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from api.user.serializers import UserSerializer
 
 
 @extend_schema(
@@ -275,12 +274,3 @@ def reset_password_with_otp(request):
         {"message": "Password reset successfully"},
         status=status.HTTP_200_OK
     )
-
-# class ProfileView(ModelViewSet):
-#     queryset = User.objects.all()
-#     serializer_class = ProfileSerializer
-#
-#     def get_queryset(self):
-#         qs = super().get_queryset()
-#         qs = qs.filter(email=self.request.user.email)
-#         return qs
