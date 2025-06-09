@@ -69,7 +69,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_superadmin = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
-    # REQUIRED_FIELDS = ["email"]
+    REQUIRED_FIELDS = ["username"]
 
     objects = UserManager()
 
